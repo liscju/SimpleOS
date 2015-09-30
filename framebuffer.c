@@ -1,5 +1,20 @@
+#include "framebuffer.h"
 
 static char *fb = (char *) 0x000B8000;
+
+/** fb_clear:
+  * Makes all framebuffer cells black
+*/
+void fb_clear() {
+	int i,j;
+	for (i=0;i<FB_ROW_COUNT;i++) {
+		for (j=0;j<FB_COLUMN_COUNT;j++) {
+			// 2* because 16 bits each = 2 bytes
+			unsigned int pos = 2*(i*FB_COLUMN_COUNT+j);
+			fb_write_cell(pos, 0, FB_BLACK, FB_BLACK);	
+		}
+	}	
+}
 
 /** fb_write_cell:
   * Write a character with the given foreground and background
