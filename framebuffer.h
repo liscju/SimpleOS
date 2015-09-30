@@ -1,6 +1,17 @@
 #ifndef __FRAMEBUFFER_H_
 #define __FRAMEBUFFER_H_
 
+#include "io.h"
+
+/* The I/O ports*/
+#define FB_COMMAND_PORT 0x3D4
+#define FB_DATA_PORT    0x3D5
+
+/* The I/O port commands  */
+#define FB_HIGH_BYTE_COMMAND 14
+#define FB_LOW_BYTE_COMMAND  15
+
+/* Colors used by FB bg and fg  */
 #define FB_BLACK 0
 #define FB_BLUE 1
 #define FB_GREEN 2
@@ -18,10 +29,12 @@
 #define FB_LIGHT_BROWN 14
 #define FB_WHITE 15
 
+/* Size of framebuffer*/
 #define FB_COLUMN_COUNT 80
 #define FB_ROW_COUNT 25
 
 void fb_clear();
 void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg);
+void fb_move_cursor(unsigned short pos);
 
 #endif /* __FRAMEBUFFER_H_ */
