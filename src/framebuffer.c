@@ -7,8 +7,8 @@ static char *fb = (char *) 0x000B8000;
  *  WARNING: The exact position in framebuffer must
  *  be later calculated
 */
-//static unsigned int cursor_pos_x = 0;
-//static unsigned int cursor_pos_y = 0;
+static unsigned int cursor_pos_row = 0;
+static unsigned int cursor_pos_col = 0;
 
 /** TO_ADDR:
  * From row,col calculate position in frambuffer
@@ -36,6 +36,7 @@ static void _fb_set_cursor(unsigned short pos) {
 */
 void fb_clear() {
 	int i,j;
+    cursor_pos_row = cursor_pos_col = 0;
 	for (i=0;i<FB_ROW_COUNT;i++) {
 		for (j=0;j<FB_COLUMN_COUNT;j++) {
 			fb_write_cell(i, j, 0, FB_BLACK, FB_BLACK);
@@ -54,6 +55,7 @@ void fb_clear() {
   * @param bg The background color
 */
 void fb_write_cell(unsigned int row, unsigned int col, char c, unsigned char fg, unsigned char bg) {
+    cursor_pos_row = cursor_pos_col = 0;
     _fb_set_cell(TO_ADDR(row, col), c, fg, bg);
 }
 
@@ -63,6 +65,8 @@ void fb_write_cell(unsigned int row, unsigned int col, char c, unsigned char fg,
   * @param col
 */
 void fb_move_cursor(unsigned int row, unsigned int col) {
+    cursor_pos_row = row;
+    cursor_pos_col = col;
     _fb_set_cursor(TO_ADDR(row, col));
 }
 
