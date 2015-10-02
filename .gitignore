@@ -6,7 +6,6 @@ cscope.files
 cscope.in.out
 cscope.out
 cscope.po.out
-*.o
-*.elf
-*.iso
+obj/
 bochslog.txt
+iso/boot/kernel.elf
