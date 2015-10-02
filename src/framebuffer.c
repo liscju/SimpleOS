@@ -17,6 +17,21 @@ static unsigned int cursor_pos_col = 0;
 
 // Implementation methods
 
+static void _fb_move_cursor_to_next_line() {
+    cursor_pos_row++;
+    cursor_pos_col = 0;
+}
+
+static void _fb_move_cursor_right() {
+    cursor_pos_col++;
+}
+
+static void _fb_move_cursor_left() {
+    if (cursor_pos_col > 0) {
+        cursor_pos_col--;
+    }
+}
+
 static void _fb_set_cell(unsigned int pos, char c, unsigned char fg, unsigned char bg) {
 	fb[pos] = c;
 	fb[pos + 1] = ((fg & 0x0F) << 4) | (bg & 0x0F);
@@ -39,7 +54,7 @@ void fb_clear() {
     cursor_pos_row = cursor_pos_col = 0;
 	for (i=0;i<FB_ROW_COUNT;i++) {
 		for (j=0;j<FB_COLUMN_COUNT;j++) {
-			fb_write_cell(i, j, 0, FB_BLACK, FB_BLACK);
+			_fb_set_cell(TO_ADDR(i, j), 0, FB_BLACK, FB_BLACK);
 		}
 	}
 }
@@ -47,6 +62,7 @@ void fb_clear() {
 /** fb_write_cell:
   * Write a character with the given foreground and background
   * in the framebuffer
+  * WARNING: It is not moving cursor
   *
   * @param row Row of framebuffer
   * @param col Col of framebuffer
@@ -55,7 +71,6 @@ void fb_clear() {
   * @param bg The background color
 */
 void fb_write_cell(unsigned int row, unsigned int col, char c, unsigned char fg, unsigned char bg) {
-    cursor_pos_row = cursor_pos_col = 0;
     _fb_set_cell(TO_ADDR(row, col), c, fg, bg);
 }
 
@@ -70,10 +85,22 @@ void fb_move_cursor(unsigned int row, unsigned int col) {
     _fb_set_cursor(TO_ADDR(row, col));
 }
 
-
-
-
-
+/** fb_write_char
+ *  Writes char to the output in current cursor place and move it
+ *  to next place
+*/
+void fb_write_char(char c) {
+    if (c == '\n') {
+        _fb_move_cursor_to_next_line();
+    } else if (c == '\b') {
+        _fb_move_cursor_left();
+        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_WHITE, FB_BLACK);
+        _fb_move_cursor_left();
+    } else {
+        fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
+        _fb_move_cursor_right();
+    }
+}
 
 
 
