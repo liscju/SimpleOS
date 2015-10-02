@@ -34,7 +34,7 @@
 #define FB_ROW_COUNT 25
 
 void fb_clear();
-void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg);
-void fb_move_cursor(unsigned short pos);
+void fb_write_cell(unsigned int row, unsigned int col, char c, unsigned char fg, unsigned char bg);
+void fb_move_cursor(unsigned int row, unsigned int col);
 
 #endif /* __FRAMEBUFFER_H_ */
