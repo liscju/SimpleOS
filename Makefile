@@ -28,11 +28,23 @@ os.iso: kernel.elf
 run: os.iso
 	bochs -f bochsrc.txt -q
 
-%.o: %.c
+kmain.o: src/kmain.c
 	$(CC) $(CFLAGS) $< -o $@
 
-%o: %.s
+framebuffer.o: src/framebuffer.c
+	$(CC) $(CFLAGS) $< -o $@
+
+loader.o: src/loader.s
 	$(AS) $(ASFLAGS) $< -o $@
+
+io.o: src/io.s
+	$(AS) $(ASFLAGS) $< -o $@
+
+#%.o: %.c
+#	$(CC) $(CFLAGS) $< -o $@
+#
+#%o: %.s
+#	$(AS) $(ASFLAGS) $< -o $@
 
 clean:
 	rm -rf *.o kernel.elf os.iso *.o bochslog.txt iso/boot/kernel.elf
