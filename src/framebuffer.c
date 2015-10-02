@@ -88,13 +88,14 @@ void fb_move_cursor(unsigned int row, unsigned int col) {
 /** fb_write_char
  *  Writes char to the output in current cursor place and move it
  *  to next place
+ *  @param c char to write
 */
 void fb_write_char(char c) {
     if (c == '\n') {
         _fb_move_cursor_to_next_line();
     } else if (c == '\b') {
         _fb_move_cursor_left();
-        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_WHITE, FB_BLACK);
+        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
         _fb_move_cursor_left();
     } else {
         fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
@@ -102,6 +103,16 @@ void fb_write_char(char c) {
     }
 }
 
+/** fb_write_str
+ *  Write string to the output moving cursor to new place
+ *  @param str string to write
+*/
+void fb_write_str(char* str) {
+    char str_tmp;
+    while ((str_tmp=*str++)) {
+        fb_write_char(str_tmp);
+    }
+}
 
 
 

@@ -38,5 +38,6 @@ void fb_write_cell(unsigned int row, unsigned int col, char c, unsigned char fg,
 void fb_move_cursor(unsigned int row, unsigned int col);
 
 void fb_write_char(char c);
+void fb_write_str(char* str);
 
 #endif /* __FRAMEBUFFER_H_ */
