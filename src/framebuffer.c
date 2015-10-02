@@ -23,7 +23,9 @@ static void _fb_move_cursor_to_next_line() {
 }
 
 static void _fb_move_cursor_right() {
-    cursor_pos_col++;
+    if (cursor_pos_col < FB_COLUMN_COUNT) {
+        cursor_pos_col++;
+    }
 }
 
 static void _fb_move_cursor_left() {
@@ -98,6 +100,9 @@ void fb_write_char(char c) {
         fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
         _fb_move_cursor_left();
     } else {
+        if (cursor_pos_col >= FB_COLUMN_COUNT) {
+            _fb_move_cursor_to_next_line();
+        }
         fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
         _fb_move_cursor_right();
     }
