@@ -17,6 +17,11 @@ static unsigned int cursor_pos_col = 0;
 
 // Implementation methods
 
+static void _fb_set_cell(unsigned int pos, char c, unsigned char fg, unsigned char bg) {
+	fb[pos] = c;
+    fb[pos + 1] = ((bg & 0x0F) << 4) | (fg & 0x0F);
+}
+
 static void _fb_shift_buffer_up() {
     int row,col;
     for (row=1;row<FB_ROW_COUNT;row++) {
@@ -30,8 +35,7 @@ static void _fb_shift_buffer_up() {
 static void _fb_clear_row(unsigned int row) {
     int i;
     for (i=0;i<FB_COLUMN_COUNT;i++) {
-        fb[TO_ADDR(row,i)] = 0;
-        fb[TO_ADDR(row,i)+1] = 0;
+        _fb_set_cell(TO_ADDR(row, i), 0, FB_WHITE, FB_BLACK);
     }
 }
 
@@ -69,11 +73,6 @@ static void _fb_move_inner_cursor_left() {
     }
 }
 
-static void _fb_set_cell(unsigned int pos, char c, unsigned char fg, unsigned char bg) {
-	fb[pos] = c;
-    fb[pos + 1] = ((bg & 0x0F) << 4) | (fg & 0x0F);
-}
-
 static void _fb_set_cursor(unsigned short pos) {
 	outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
 	outb(FB_DATA_PORT, ((pos >> 8) & 0x00FF));
@@ -91,7 +90,7 @@ void fb_clear() {
     cursor_pos_row = cursor_pos_col = 0;
 	for (i=0;i<FB_ROW_COUNT;i++) {
 		for (j=0;j<FB_COLUMN_COUNT;j++) {
-			_fb_set_cell(TO_ADDR(i, j), 0, FB_BLACK, FB_BLACK);
+			_fb_set_cell(TO_ADDR(i, j), 0, FB_WHITE, FB_BLACK);
 		}
 	}
 }
@@ -113,13 +112,14 @@ void fb_write_cell(unsigned int row, unsigned int col, char c, unsigned char fg,
 
 /** fb_move_cursor:
   * Moves the cursor of the framebuffer to the given position
+  * ,changes inner cursor position
   * @param row
   * @param col
 */
 void fb_move_cursor(unsigned int row, unsigned int col) {
     cursor_pos_row = row;
     cursor_pos_col = col;
-    _fb_set_cursor(TO_ADDR(row, col));
+    _fb_set_cursor(row * FB_COLUMN_COUNT + col);
 }
 
 /** fb_write_char
@@ -131,9 +131,9 @@ void fb_write_char(char c) {
     if (c == '\n') {
         _fb_move_inner_cursor_to_next_line();
     } else if (c == '\b') {
-        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
+        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_WHITE, FB_BLACK);
         _fb_move_inner_cursor_left();
-        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
+        fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_WHITE, FB_BLACK);
     } else if (c == '\t') {
         int i;
         for (i=0;i<4;i++) {
@@ -143,6 +143,7 @@ void fb_write_char(char c) {
         fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
         _fb_move_inner_cursor_right();
     }
+    fb_move_cursor(cursor_pos_row, cursor_pos_col);
 }
 
 /** fb_write_str
