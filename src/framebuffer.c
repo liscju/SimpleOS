@@ -35,7 +35,14 @@ static void _fb_clear_row(unsigned int row) {
     }
 }
 
-static void _fb_move_cursor_to_next_line() {
+/** Move inner cursor function deals with moving
+ *  inner pointer to next place in framebuffer
+ *  to write into, they have nothing to do
+ *  with framebuffer cursor which is displayed on
+ *  the screen
+*/
+
+static void _fb_move_inner_cursor_to_next_line() {
     if (cursor_pos_row < FB_ROW_COUNT-1) {
         cursor_pos_row++;
         cursor_pos_col = 0;
@@ -48,15 +55,15 @@ static void _fb_move_cursor_to_next_line() {
     }
 }
 
-static void _fb_move_cursor_right() {
+static void _fb_move_inner_cursor_right() {
     if (cursor_pos_col < FB_COLUMN_COUNT-1) {
         cursor_pos_col++;
     } else {
-        _fb_move_cursor_to_next_line();
+        _fb_move_inner_cursor_to_next_line();
     }
 }
 
-static void _fb_move_cursor_left() {
+static void _fb_move_inner_cursor_left() {
     if (cursor_pos_col > 0) {
         cursor_pos_col--;
     }
@@ -122,10 +129,10 @@ void fb_move_cursor(unsigned int row, unsigned int col) {
 */
 void fb_write_char(char c) {
     if (c == '\n') {
-        _fb_move_cursor_to_next_line();
+        _fb_move_inner_cursor_to_next_line();
     } else if (c == '\b') {
         fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
-        _fb_move_cursor_left();
+        _fb_move_inner_cursor_left();
         fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
     } else if (c == '\t') {
         int i;
@@ -134,7 +141,7 @@ void fb_write_char(char c) {
         }
     } else {
         fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
-        _fb_move_cursor_right();
+        _fb_move_inner_cursor_right();
     }
 }
 
