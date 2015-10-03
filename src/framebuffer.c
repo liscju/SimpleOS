@@ -13,18 +13,46 @@ static unsigned int cursor_pos_col = 0;
 /** TO_ADDR:
  * From row,col calculate position in frambuffer
 */
-#define TO_ADDR(row, col) (2*(row*FB_COLUMN_COUNT+col))
+#define TO_ADDR(row, col) (2*((row)*FB_COLUMN_COUNT+(col)))
 
 // Implementation methods
 
+static void _fb_shift_buffer_up() {
+    int row,col;
+    for (row=1;row<FB_ROW_COUNT;row++) {
+        for (col=0;col<FB_COLUMN_COUNT;col++) {
+            fb[TO_ADDR(row-1,col)] = fb[TO_ADDR(row,col)];
+            fb[TO_ADDR(row-1,col)+1] = fb[TO_ADDR(row,col)+1];
+        }
+    }
+}
+
+static void _fb_clear_row(unsigned int row) {
+    int i;
+    for (i=0;i<FB_COLUMN_COUNT;i++) {
+        fb[TO_ADDR(row,i)] = 0;
+        fb[TO_ADDR(row,i)+1] = 0;
+    }
+}
+
 static void _fb_move_cursor_to_next_line() {
-    cursor_pos_row++;
-    cursor_pos_col = 0;
+    if (cursor_pos_row < FB_ROW_COUNT-1) {
+        cursor_pos_row++;
+        cursor_pos_col = 0;
+    } else {
+        _fb_shift_buffer_up();
+        _fb_clear_row(FB_ROW_COUNT - 1);
+
+        cursor_pos_row = FB_ROW_COUNT - 1;
+        cursor_pos_col = 0;
+    }
 }
 
 static void _fb_move_cursor_right() {
-    if (cursor_pos_col < FB_COLUMN_COUNT) {
+    if (cursor_pos_col < FB_COLUMN_COUNT-1) {
         cursor_pos_col++;
+    } else {
+        _fb_move_cursor_to_next_line();
     }
 }
 
@@ -36,7 +64,7 @@ static void _fb_move_cursor_left() {
 
 static void _fb_set_cell(unsigned int pos, char c, unsigned char fg, unsigned char bg) {
 	fb[pos] = c;
-	fb[pos + 1] = ((fg & 0x0F) << 4) | (bg & 0x0F);
+    fb[pos + 1] = ((fg & 0x0F) << 4) | (bg & 0x0F);
 }
 
 static void _fb_set_cursor(unsigned short pos) {
@@ -100,9 +128,6 @@ void fb_write_char(char c) {
         fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
         _fb_move_cursor_left();
     } else {
-        if (cursor_pos_col >= FB_COLUMN_COUNT) {
-            _fb_move_cursor_to_next_line();
-        }
         fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
         _fb_move_cursor_right();
     }
