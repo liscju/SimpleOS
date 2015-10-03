@@ -1,7 +1,11 @@
 #include "framebuffer.h"
 
+char *BOOT_MSG =
+    "Welcome to the SimpleOS\n"
+    "OS was developed only for learning sth about building\n"
+    "operating system and is not ready for production\n";
+
 void kmain() {
 	fb_clear();
-    fb_write_str("ABECADLO\nHEJKA co tam??\b");
-    fb_write_str("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    fb_write_str(BOOT_MSG);
 }
