@@ -83,7 +83,8 @@ static void _fb_set_cursor(unsigned short pos) {
 // Public methods
 
 /** fb_clear:
-  * Makes all framebuffer cells black
+  * Makes all framebuffer cells black with whiteforeground,
+  * moves cursor to the beggining of the buffer
 */
 void fb_clear() {
 	int i,j;
