@@ -3,7 +3,8 @@
 char *BOOT_MSG =
     "Welcome to the SimpleOS\n"
     "OS was developed only for learning sth about building\n"
-    "operating system and is not ready for production\n";
+    "operating system and is not ready for production\n"
+    "\tUSE WITH CAUTION!!!\n";
 
 void kmain() {
 	fb_clear();

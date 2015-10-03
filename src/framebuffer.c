@@ -127,6 +127,11 @@ void fb_write_char(char c) {
         fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
         _fb_move_cursor_left();
         fb_write_cell(cursor_pos_row, cursor_pos_col, 0, FB_BLACK, FB_BLACK);
+    } else if (c == '\t') {
+        int i;
+        for (i=0;i<4;i++) {
+            fb_write_char(' ');
+        }
     } else {
         fb_write_cell(cursor_pos_row, cursor_pos_col, c, FB_WHITE, FB_BLACK);
         _fb_move_cursor_right();
