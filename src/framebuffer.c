@@ -64,7 +64,7 @@ static void _fb_move_cursor_left() {
 
 static void _fb_set_cell(unsigned int pos, char c, unsigned char fg, unsigned char bg) {
 	fb[pos] = c;
-    fb[pos + 1] = ((fg & 0x0F) << 4) | (bg & 0x0F);
+    fb[pos + 1] = ((bg & 0x0F) << 4) | (fg & 0x0F);
 }
 
 static void _fb_set_cursor(unsigned short pos) {
