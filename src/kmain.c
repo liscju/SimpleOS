@@ -12,5 +12,5 @@ void kmain() {
 	fb_clear();
     fb_write_str(BOOT_MSG);
     serial_initialize();
-    serial_write_str(SERIAL_COM1_PORT, "Hello Serial World\n");
+    serial_write_str(SERIAL_COM1_PORT, BOOT_MSG);
 }

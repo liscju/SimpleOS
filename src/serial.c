@@ -27,6 +27,19 @@
 
 /** Private functions */
 
+/** serial_is_transmit_fifo_empty:
+ *  Checks whether the transmit FIFO queue is empty or not
+ *  for the given port
+ *
+ *  @param com The COM port
+ *  @return 0 if the transmit FIFO queue is not empty
+ *          1 if the transmit FIFO queue is empty
+*/
+int serial_is_transmit_fifo_empty(unsigned short com) {
+    /* 0x20 = 0010 0000 */
+    return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20;
+}
+
 /** serial_configure_baud_rate:
  *  Sets the speed of the data being sent. The default speed
  *  of a serial port is 115200 bits/s. The argument is a
@@ -139,6 +152,9 @@ void serial_initialize() {
  *  @param data char to write
 */
 void serial_write_char(unsigned short com, unsigned char data) {
+    while (!serial_is_transmit_fifo_empty(com)) {
+        /* wait and try again */
+    }
     outb(SERIAL_DATA_PORT(com), data);
 }
 
