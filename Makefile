@@ -2,7 +2,7 @@ SRCDIR = src
 OBJDIR = obj
 
 OBJECTS = $(OBJDIR)/loader.o $(OBJDIR)/io.o $(OBJDIR)/framebuffer.o \
-		  $(OBJDIR)/kmain.o
+		  $(OBJDIR)/serial.o $(OBJDIR)/kmain.o
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 	 -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c
@@ -38,6 +38,9 @@ $(OBJDIR)/kmain.o: $(SRCDIR)/kmain.c
 $(OBJDIR)/framebuffer.o: $(SRCDIR)/framebuffer.c
 	$(CC) $(CFLAGS) $< -o $@
 
+$(OBJDIR)/serial.o: $(SRCDIR)/serial.c
+	$(CC) $(CFLAGS) $< -o $@
+
 $(OBJDIR)/loader.o: $(SRCDIR)/loader.s
 	$(AS) $(ASFLAGS) $< -o $@
 
@@ -51,4 +54,5 @@ $(OBJDIR)/io.o: $(SRCDIR)/io.s
 #	$(AS) $(ASFLAGS) $< -o $@
 
 clean:
-	rm -rf obj/*.o obj/kernel.elf obj/os.iso bochslog.txt iso/boot/kernel.elf
+	rm -rf obj/*.o obj/kernel.elf obj/os.iso bochslog.txt iso/boot/kernel.elf \
+		com1.out

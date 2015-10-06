@@ -9,3 +9,4 @@ cscope.po.out
 obj/
 bochslog.txt
 iso/boot/kernel.elf
+com1.out

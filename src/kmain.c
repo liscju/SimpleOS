@@ -1,4 +1,5 @@
 #include "framebuffer.h"
+#include "serial.h"
 
 char *BOOT_MSG =
     "Welcome to the SimpleOS\n"
@@ -10,4 +11,6 @@ char *BOOT_MSG =
 void kmain() {
 	fb_clear();
     fb_write_str(BOOT_MSG);
+    serial_initialize();
+    serial_write(SERIAL_COM1_PORT, 'a');
 }
