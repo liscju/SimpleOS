@@ -89,6 +89,27 @@ static void serial_configure_modem(unsigned short com) {
     outb(SERIAL_MODEM_COMMAND_PORT(com), 0x03);
 }
 
+/** serial_configure_fifo:
+ *  Configures the buffers for the given port. Buffers are used
+ *  when you want to send data to the serial port faster than
+ *  it can be sent over lined.
+*/
+static void serial_configure_fifo(unsigned short com) {
+    /** Bit:     | 7  6  | 5  | 4  | 3  | 2  | 1  | 0  |
+     *  Content: | lvl   | bs | r  | dma| clt| clr| e  |
+     *  Value:   | 1  1  | 0  | 0  | 0  | 1  | 1  | 1  | = 0xC7
+     *  where
+     *      lvl - how many bytes should be stored in the fifo buffer
+     *      bs  - if the buffers should be 16 or 64 bytes large
+     *      r   - reserved for future use
+     *      dma - how the serial port data should be accessed
+     *      clt - clear the transmission fifo buffer
+     *      clr - clear the receiver fifo buffer
+     *      e   - if the fifo buffer should be enabled or not
+    */
+    outb(SERIAL_FIFO_COMMAND_PORT(com), 0xC7);
+}
+
 /** serial_initialize_port:
  *  Initializes given port
  *
@@ -98,6 +119,7 @@ static void serial_initialize_port(unsigned short com) {
     serial_configure_baud_rate(com, SERIAL_BAUD_RATE_DIVISOR);
     serial_configure_line(com);
     serial_configure_modem(com);
+    serial_configure_fifo(com);
 }
 
 /* Public Functions*/
@@ -110,12 +132,25 @@ void serial_initialize() {
     serial_initialize_port(SERIAL_COM1_PORT);
 }
 
-/** serial_write:
- *  Writes data to the given port
+/** serial_write_char:
+ *  Writes given char to the given port
  *
  *  @param com port to write data
- *  @param data
+ *  @param data char to write
 */
-void serial_write(unsigned short com, unsigned char data) {
+void serial_write_char(unsigned short com, unsigned char data) {
     outb(SERIAL_DATA_PORT(com), data);
+}
+
+/** serial_write_str:
+ *  Writes given string to the given port
+ *
+ *  @param com port to write data
+ *  @param data string to write
+*/
+void serial_write_str(unsigned short com, char* data) {
+    unsigned char tmp;
+    while ((tmp = *data++)) {
+        serial_write_char(com, tmp);
+    }
 }
